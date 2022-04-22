@@ -21,11 +21,11 @@ print ('Length of each feature =', filterbank_features.shape[1])
 
 import glob
 import os.path as path
-genre_list = ["blues","classical", "jazz", "country"]
+genre_list = ["Perro","Gato", "Pajaro"]
 print(len(genre_list))
 figure = plt.figure(figsize=(20,3))
 for idx ,genre in enumerate(genre_list): 
-   example_data_path = 'C:/Users/inqui/Documents/GitHub/detectorsonidos/audios/' + genre
+   example_data_path = './audios/' + genre
    #print (example_data_path)
 
    #print((os.path.join(example_data_path + '/', "*.wav")))
@@ -68,7 +68,7 @@ class HMMTrainer(object):
 
 
 hmm_models = []
-input_folder = 'C:/Users/inqui/Documents/GitHub/detectorsonidos/audios'
+input_folder = './audios'
 # Parse the input directory
 for dirname in os.listdir(input_folder):
     # Get the name of the subfolder
@@ -107,7 +107,7 @@ print(hmm_models)
 
 
 
-input_folder = 'C:/Users/inqui/Documents/GitHub/detectorsonidos/audios'
+input_folder = './audios'
 real_labels = []
 pred_labels = []
 for dirname in os.listdir(input_folder):
@@ -173,7 +173,7 @@ def plot_confusion_matrix(cm, classes,
 
 cm = confusion_matrix(real_labels, pred_labels)
 np.set_printoptions(precision=2)
-classes = ["blues","classical", "country", "jazz"]
+classes = ["Perro","Gato", "Pajaro"]
 plt.figure()
 plot_confusion_matrix(cm, classes=classes, normalize=True,
                           title='Normalized confusion matrix')
