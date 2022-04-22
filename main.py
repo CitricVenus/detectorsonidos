@@ -21,8 +21,8 @@ print ('Length of each feature =', filterbank_features.shape[1])
 
 import glob
 import os.path as path
-genre_list = ["Perro","Gato", "Pajaro"]
-print(len(genre_list))
+genre_list = ["Perro","Gato", "Hamster","Burro","Pajaro","Grillo"]
+#print(len(genre_list))
 figure = plt.figure(figsize=(20,3))
 for idx ,genre in enumerate(genre_list): 
    example_data_path = './audios/' + genre
@@ -103,7 +103,7 @@ for dirname in os.listdir(input_folder):
     hmm_trainer.train(X)
     hmm_models.append((hmm_trainer, label))
     hmm_trainer = None
-print(hmm_models)
+#print(hmm_models)
 
 
 
@@ -173,7 +173,7 @@ def plot_confusion_matrix(cm, classes,
 
 cm = confusion_matrix(real_labels, pred_labels)
 np.set_printoptions(precision=2)
-classes = ["Perro","Gato", "Pajaro"]
+classes = ["Perro","Gato", "Hamster","Burro","Pajaro","Grillo"]
 plt.figure()
 plot_confusion_matrix(cm, classes=classes, normalize=True,
                           title='Normalized confusion matrix')
