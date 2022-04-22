@@ -1,3 +1,9 @@
+#Erick Montan - A01379766
+#Adal Rodriguez - A01114713
+#Linda Abundis - A01636416
+#Estefania Jimenez - A01635062
+
+
 from python_speech_features import mfcc, logfbank
 from scipy.io import wavfile
 import numpy as np
