@@ -6,18 +6,18 @@ from hmmlearn import hmm
 from sklearn.metrics import confusion_matrix
 import itertools
 import os
+from sklearn.metrics import classification_report
 
+"""
+sampling_freq, audio = wavfile.read("C:/Users/inqui/OneDrive/Documentos/detectorsonidos/blues.wav")
+mfcc_features = mfcc(audio, sampling_freq)
+filterbank_features = logfbank(audio, sampling_freq)
 
-#sampling_freq, audio = wavfile.read("C:/Users/inqui/OneDrive/Documentos/detectorsonidos/blues.wav")
-#mfcc_features = mfcc(audio, sampling_freq)
-#filterbank_features = logfbank(audio, sampling_freq)
-
-#print ('\nMFCC:\nNumber of windows =', mfcc_features.shape[0])
-#print ('Length of each feature =', mfcc_features.shape[1])
-#print ('\nFilter bank:\nNumber of windows =', filterbank_features.shape[0])
-#print ('Length of each feature =', filterbank_features.shape[1])
-
-
+print ('\nMFCC:\nNumber of windows =', mfcc_features.shape[0])
+print ('Length of each feature =', mfcc_features.shape[1])
+print ('\nFilter bank:\nNumber of windows =', filterbank_features.shape[0])
+print ('Length of each feature =', filterbank_features.shape[1])
+"""
 
 import glob
 import os.path as path
@@ -25,10 +25,10 @@ genre_list = ["blues","classical", "jazz", "country"]
 print(len(genre_list))
 figure = plt.figure(figsize=(20,3))
 for idx ,genre in enumerate(genre_list): 
-   example_data_path = '/Users/inqui/OneDrive/Documentos/detectorsonidos/audios/' + genre
+   example_data_path = 'C:/Users/inqui/Documents/GitHub/detectorsonidos/audios/' + genre
    #print (example_data_path)
 
-   print((os.path.join(example_data_path + '/', "*.wav")))
+   #print((os.path.join(example_data_path + '/', "*.wav")))
 
 
 
@@ -68,7 +68,7 @@ class HMMTrainer(object):
 
 
 hmm_models = []
-input_folder = '/Users/inqui/OneDrive/Documentos/detectorsonidos/audios'
+input_folder = 'C:/Users/inqui/Documents/GitHub/detectorsonidos/audios'
 # Parse the input directory
 for dirname in os.listdir(input_folder):
     # Get the name of the subfolder
@@ -95,11 +95,89 @@ for dirname in os.listdir(input_folder):
 
             # Append the label
             y_words.append(label)
-    print('X.shape =', X.shape)
+    #print('X.shape =', X.shape)
 
-    print(X)
+    #print(X)
     # Train and save HMM model
     hmm_trainer = HMMTrainer(n_components=4)
     hmm_trainer.train(X)
     hmm_models.append((hmm_trainer, label))
     hmm_trainer = None
+print(hmm_models)
+
+
+
+input_folder = 'C:/Users/inqui/Documents/GitHub/detectorsonidos/audios'
+real_labels = []
+pred_labels = []
+for dirname in os.listdir(input_folder):
+
+  subfolder = os.path.join(input_folder, dirname)
+  if not os.path.isdir(subfolder):
+    continue
+  # Extract the label
+  label_real = subfolder[subfolder.rfind('/') + 1:]
+
+  for filename in [x for x in os.listdir(subfolder) if x.endswith('.wav')][:-1]:
+    real_labels.append(label_real)
+    filepath = os.path.join(subfolder, filename)
+    sampling_freq, audio = wavfile.read(filepath)
+    mfcc_features = mfcc(audio, sampling_freq)
+    max_score = -9999999999999999999
+    output_label = None
+    for item in hmm_models:
+       hmm_model, label = item
+       score = hmm_model.get_score(mfcc_features)
+       if score > max_score:
+          max_score = score
+          output_label = label
+    pred_labels.append(output_label)
+
+print(real_labels)
+print("----------------------------------------------------------------------------------------------------------")
+print(pred_labels)
+
+
+
+
+def plot_confusion_matrix(cm, classes,
+                          normalize=False,
+                          title='Confusion matrix',
+                          cmap=plt.cm.Blues):
+
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+    print(cm)
+
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+
+cm = confusion_matrix(real_labels, pred_labels)
+np.set_printoptions(precision=2)
+classes = ["blues","classical", "country", "jazz"]
+plt.figure()
+plot_confusion_matrix(cm, classes=classes, normalize=True,
+                          title='Normalized confusion matrix')
+
+plt.show()
+
+print(classification_report(real_labels, pred_labels, target_names=classes))
